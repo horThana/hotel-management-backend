@@ -7,6 +7,7 @@ const roomServiceSchema  = new Schema({
         type: String,
         required: true,
         unique: true,
+        maxlength: 3 // Maximum of 3 characters
     },
     room_name:{
         type: String,
