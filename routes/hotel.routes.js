@@ -24,20 +24,19 @@ router.post('/create-room', async(req, res, next) => {
     
 });
 
-router.put('/update-room/:id', async (req, res, next) => {
+router.put('/update-room', async (req, res, next) => {
     try {
-        // Validate ObjectId
-        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({ error: 'Invalid Room ID' });
+        const { room_id, ...updateData } = req.body; // Extract room_id and the rest of the data
+
+        // Validate if room_id is provided
+        if (!room_id) {
+            return res.status(400).json({ error: 'Room ID is required' });
         }
 
-        // Log request details
-        console.log('Request Params:', req.params);
-        console.log('Request Body:', req.body);
-
-        const update_roomservice = await RoomService.findByIdAndUpdate(
-            req.params.id,
-            { $set: req.body },
+        // Find the room by room_id and update
+        const update_roomservice = await RoomService.findOneAndUpdate(
+            { room_id: room_id },
+            { $set: updateData },
             { new: true }
         );
 
@@ -52,20 +51,22 @@ router.put('/update-room/:id', async (req, res, next) => {
     }
 });
 
-router.delete('/delete-room/:id', async(req, res, next) => {
-    
-    try{
-        const id = req.params.id;
+router.delete('/delete-room/:room_id', async (req, res, next) => {
+    try {
+        const room_id = req.params.room_id;
 
-        const deleteroom = await RoomService.findById({_id: id});
-        if(!deleteroom){
-            return res.status(404).json({message: "Room not found"});
+        // Find the room by room_id
+        const deleteroom = await RoomService.findOne({ room_id: room_id });
+        if (!deleteroom) {
+            return res.status(404).json({ message: "Room not found" });
         }
-        await RoomService.findByIdAndDelete(id);
 
-        res.status(200).json({message: "Room has been deleted"});
-        console.log(deleteroom + "complete to delete");
-    }catch(err){
+        // Delete the room by room_id
+        await RoomService.deleteOne({ room_id: room_id });
+
+        res.status(200).json({ message: "Room has been deleted" });
+        console.log("Room deleted: ", deleteroom);
+    } catch (err) {
         next(err);
     }
 });
