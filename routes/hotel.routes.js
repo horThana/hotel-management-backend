@@ -3,6 +3,7 @@ import RoomService from '../models/roomservice/roomservice.js';
 
 const router = express.Router();
 
+//หาข้อมูลทั้งหมด
 router.get('/', async (req, res, next) => {
   try{
     const roomservice = await RoomService.find();
@@ -12,6 +13,7 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+//สร้างข้อมูลใหม่ โดยใช้ post และส่งข้อมูลที่ต้องการเพิ่มเข้ามา
 router.post('/create-room', async(req, res, next) => {  
     try{
         const create_roomservice = await RoomService.create(req.body);
@@ -24,6 +26,7 @@ router.post('/create-room', async(req, res, next) => {
     
 });
 
+//หาข้อมูลโดยการใช้ room_id ที่เราต้องการ เพราะ room_id เป็น unique จึงสามารถใช้ได้ 
 router.put('/update-room', async (req, res, next) => {
     try {
         const { room_id, ...updateData } = req.body; // Extract room_id and the rest of the data
@@ -51,6 +54,7 @@ router.put('/update-room', async (req, res, next) => {
     }
 });
 
+//ลบข้อมูลโดยใช้ room_id ที่เราต้องการลบ
 router.delete('/delete-room/:room_id', async (req, res, next) => {
     try {
         const room_id = req.params.room_id;
